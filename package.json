@@ -1,0 +1,16 @@
+{
+  "name": "course-reward-system",
+  "version": "1.0.0",
+  "description": "Smart contract for course reward system - Blockchain Project 2",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "node": "npx hardhat node",
+    "deploy": "npx hardhat run scripts/deploy.js --network localhost",
+    "interact": "npx hardhat run scripts/interact.js --network localhost"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.19.0"
+  }
+}
