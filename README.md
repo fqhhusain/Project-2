@@ -14,7 +14,7 @@ Smart contract untuk sistem reward mahasiswa yang menyelesaikan kursus. Dosen (o
 - Owner bisa whitelist mahasiswa yang boleh claim
 - Mahasiswa bisa claim reward sekali saja
 - Tracking siapa saja yang sudah claim
-- Deadline claim — tidak bisa claim setelah batas waktu
+- Deadline claim — tidak bisa claim setelah batas waktu 7 hari
 - Event logging untuk setiap aksi penting
 - Owner bisa withdraw sisa dana kontrak
 
@@ -96,7 +96,3 @@ npx hardhat run scripts/interact.js --network localhost
 ### Transaksi
 
 ![alt text](image-6.png)
-
-### State
-
-![alt text](image-8.png)
