@@ -103,6 +103,22 @@ describe("CourseReward", function () {
         courseReward.connect(stranger).claim()
       ).to.be.revertedWith("Not whitelisted");
     });
+
+    // ✅ NEW: covers the "Insufficient balance" branch (line 48)
+    it("should reject claim when contract has insufficient balance", async function () {
+      // Deploy a fresh contract with NO ETH funding
+      const CourseReward = await ethers.getContractFactory("CourseReward");
+      const emptyContract = await CourseReward.deploy(rewardAmount, deadline, {
+        value: 0,
+      });
+      await emptyContract.waitForDeployment();
+
+      await emptyContract.addToWhitelist(student1.address);
+
+      await expect(
+        emptyContract.connect(student1).claim()
+      ).to.be.revertedWith("Insufficient balance");
+    });
   });
 
   // ─── Deadline ─────────────────────────────────────────────────
@@ -116,6 +132,59 @@ describe("CourseReward", function () {
       await expect(
         courseReward.connect(student1).claim()
       ).to.be.revertedWith("Deadline passed");
+    });
+  });
+
+  // ─── Withdraw ─────────────────────────────────────────────────
+  // ✅ NEW describe block — covers lines 60, 61, 62, 63
+  describe("Withdraw", function () {
+    it("should allow owner to withdraw contract balance", async function () {
+      const ownerBefore = await ethers.provider.getBalance(owner.address);
+      const contractBalance = await courseReward.getBalance();
+
+      const tx = await courseReward.withdraw();
+      const receipt = await tx.wait();
+      const gasUsed = receipt.gasUsed * receipt.gasPrice;
+
+      const ownerAfter = await ethers.provider.getBalance(owner.address);
+
+      // owner balance increased by (contractBalance - gas)
+      expect(ownerAfter).to.equal(ownerBefore + contractBalance - gasUsed);
+    });
+
+    it("should set contract balance to zero after withdraw", async function () {
+      await courseReward.withdraw();
+      expect(await courseReward.getBalance()).to.equal(0);
+    });
+
+    it("should reject withdraw when contract balance is zero", async function () {
+      await courseReward.withdraw(); // drain it first
+      await expect(courseReward.withdraw()).to.be.revertedWith(
+        "Nothing to withdraw"
+      );
+    });
+
+    it("should reject non-owner from withdrawing", async function () {
+      await expect(
+        courseReward.connect(stranger).withdraw()
+      ).to.be.revertedWith("Only owner can call this");
+    });
+  });
+
+  // ─── getBalance ───────────────────────────────────────────────
+  // ✅ NEW — covers line 68
+  describe("getBalance", function () {
+    it("should return the correct contract balance", async function () {
+      const balance = await courseReward.getBalance();
+      expect(balance).to.equal(ethers.parseEther("1.0"));
+    });
+
+    it("should reflect balance after a student claims", async function () {
+      await courseReward.addToWhitelist(student1.address);
+      await courseReward.connect(student1).claim();
+
+      const balance = await courseReward.getBalance();
+      expect(balance).to.equal(ethers.parseEther("1.0") - rewardAmount);
     });
   });
 });
