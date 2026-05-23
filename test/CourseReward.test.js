@@ -10,7 +10,8 @@ describe("CourseReward", function () {
     [owner, student1, student2, stranger] = await ethers.getSigners();
 
     rewardAmount = ethers.parseEther("0.1");
-    deadline = Math.floor(Date.now() / 1000) + 86400; // 24 hours from now
+    const latestBlock = await ethers.provider.getBlock("latest");
+    deadline = latestBlock.timestamp + 86400;
 
     const CourseReward = await ethers.getContractFactory("CourseReward");
     courseReward = await CourseReward.deploy(rewardAmount, deadline, {
@@ -104,7 +105,6 @@ describe("CourseReward", function () {
       ).to.be.revertedWith("Not whitelisted");
     });
 
-    // ✅ NEW: covers the "Insufficient balance" branch (line 48)
     it("should reject claim when contract has insufficient balance", async function () {
       // Deploy a fresh contract with NO ETH funding
       const CourseReward = await ethers.getContractFactory("CourseReward");
@@ -136,7 +136,6 @@ describe("CourseReward", function () {
   });
 
   // ─── Withdraw ─────────────────────────────────────────────────
-  // ✅ NEW describe block — covers lines 60, 61, 62, 63
   describe("Withdraw", function () {
     it("should allow owner to withdraw contract balance", async function () {
       const ownerBefore = await ethers.provider.getBalance(owner.address);
@@ -172,7 +171,6 @@ describe("CourseReward", function () {
   });
 
   // ─── getBalance ───────────────────────────────────────────────
-  // ✅ NEW — covers line 68
   describe("getBalance", function () {
     it("should return the correct contract balance", async function () {
       const balance = await courseReward.getBalance();

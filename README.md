@@ -82,8 +82,74 @@ npx hardhat run scripts/interact.js --network localhost
 
 ### Compile
 ![alt text](image.png)
-### Test
-![alt text](image-1.png)
+### Test and coverage
+```
+npx hardhat coverage
+
+Version
+=======
+> solidity-coverage: v0.8.17
+
+Instrumenting for coverage...
+=============================
+
+> CourseReward.sol
+
+Compilation:
+============
+
+Nothing to compile
+
+Network Info
+============
+> HardhatEVM: v2.28.6
+> network:    hardhat
+
+
+
+  CourseReward
+    Deployment
+      ✔ should set the correct owner
+      ✔ should initialize with correct reward amount and deadline
+    Whitelist
+      ✔ should allow owner to whitelist a student
+      ✔ should reject non-owner from whitelisting
+    Set Reward Amount
+      ✔ should allow owner to change reward amount
+      ✔ should emit RewardAmountChanged event
+      ✔ should reject non-owner from changing amount
+    Claim
+      ✔ should allow whitelisted student to claim and receive ETH
+      ✔ should mark student as claimed after claiming
+      ✔ should emit RewardClaimed event
+      ✔ should reject double claim
+      ✔ should reject non-whitelisted student
+      ✔ should reject claim when contract has insufficient balance
+    Deadline
+      ✔ should reject claim after deadline has passed
+    Withdraw
+      ✔ should allow owner to withdraw contract balance
+      ✔ should set contract balance to zero after withdraw
+      ✔ should reject withdraw when contract balance is zero
+      ✔ should reject non-owner from withdrawing
+    getBalance
+      ✔ should return the correct contract balance
+      ✔ should reflect balance after a student claims
+
+
+  20 passing (341ms)
+
+-------------------|----------|----------|----------|----------|----------------|
+File               |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-------------------|----------|----------|----------|----------|----------------|
+ contracts/        |      100 |    90.91 |      100 |      100 |                |
+  CourseReward.sol |      100 |    90.91 |      100 |      100 |                |
+-------------------|----------|----------|----------|----------|----------------|
+All files          |      100 |    90.91 |      100 |      100 |                |
+-------------------|----------|----------|----------|----------|----------------|
+
+> Istanbul reports written to ./coverage/ and ./coverage.json
+```
 ### Deploy
 ![alt text](image-2.png)
 
